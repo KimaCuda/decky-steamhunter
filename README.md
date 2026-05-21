@@ -94,7 +94,7 @@ See the [Decky plugin development wiki](https://wiki.deckbrew.xyz/en/user-guide/
 
 - Stats and branding: [SteamHunter](https://steamhunters.com)
 - Built with [@decky/ui](https://github.com/SteamDeckHomebrew/decky-frontend-lib) and [@decky/api](https://github.com/SteamDeckHomebrew/decky-loader)
-- Inspired by [hltb-for-deck](https://github.com/SteamDeckHomebrew/hltb-for-deck) (library page overlay pattern)
+- Inspired by [hltb-for-deck](https://github.com/hulkrelax/hltb-for-deck) (library page overlay pattern)
 
 ## License
 
