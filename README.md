@@ -37,7 +37,7 @@ Open the plugin from the Decky menu (⋯) to clear cached stats. Data is stored 
 
 ## Install
 
-Install through the Decky Plugin Store (when listed) or sideload a release zip built from this repo.
+Install through the Decky Plugin Store (not listed yet) or sideload a release zip built from this repo.
 
 Requires [Decky Loader](https://github.com/SteamDeckHomebrew/decky-loader).
 
