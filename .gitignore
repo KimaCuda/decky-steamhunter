@@ -46,6 +46,10 @@ yalc.lock
 
 backend/out
 
+# Local deploy script (may contain SSH credentials)
+deploy.sh
+package-lock.json
+
 # Make sure to ignore any instance of the loader's decky_plugin.py
 decky_plugin.py
 

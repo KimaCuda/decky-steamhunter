@@ -1,11 +1,11 @@
 {
-  "name": "Example Plugin",
-  "author": "John Doe",
-  "flags": ["debug", "_root"],
+  "name": "steam-hunter-for-deck",
+  "author": "kimacuda",
+  "flags": ["_root"],
   "api_version": 1,
   "publish": {
-    "tags": ["template", "root"],
-    "description": "Decky example plugin.",
-    "image": "https://opengraph.githubassets.com/1/SteamDeckHomebrew/PluginLoader"
+    "tags": ["achievements", "steamhunters", "library"],
+    "description": "Shows SteamHunter game summary stats on your Steam library game pages.",
+    "image": "https://steamhunters.com/content/img/steam_hunters.svg"
   }
 }
