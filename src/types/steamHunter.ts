@@ -23,6 +23,7 @@ export interface SteamHunterStats {
     playersPerfected: string;
     playersQualified: string;
     playersAndOwners: string;
+    hasAchievements: boolean;
     lastUpdatedAt: Date;
     showStats: boolean;
     hasData: boolean;
@@ -37,6 +38,7 @@ export const EMPTY_STATS: SteamHunterStats = {
     playersPerfected: '--',
     playersQualified: '--',
     playersAndOwners: '--',
+    hasAchievements: true,
     lastUpdatedAt: new Date(0),
     showStats: true,
     hasData: false,

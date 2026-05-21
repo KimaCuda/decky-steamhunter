@@ -21,6 +21,8 @@ function mapSummary(
     summary: SteamHunterAppSummary,
     steamPointsSum: number | null
 ): SteamHunterStats {
+    const hasAchievements = summary.achievementCount > 0;
+
     return {
         achievements: formatNumber(summary.achievementCount),
         points: formatNumber(summary.points),
@@ -31,6 +33,7 @@ function mapSummary(
         playersPerfected: formatNumber(summary.playersPerfectedCount),
         playersQualified: formatNumber(summary.playersQualifiedCount),
         playersAndOwners: formatNumber(summary.userCount),
+        hasAchievements,
         lastUpdatedAt: new Date(),
         showStats: true,
         hasData: true,
@@ -72,28 +75,41 @@ async function fetchSteamPointsSum(appId: number): Promise<number | null> {
     }
 }
 
-export default function useSteamHunter(appId: number) {
+export type UseSteamHunterResult = SteamHunterStats & { isLoading: boolean };
+
+export default function useSteamHunter(appId: number): UseSteamHunterResult {
     const [stats, setStats] = useState<SteamHunterStats>(EMPTY_STATS);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         let cancelled = false;
 
         (async () => {
+            setIsLoading(true);
+
             const cached = await getCache(appId);
             if (cached && !needCacheUpdate(cached.lastUpdatedAt)) {
-                if (!cancelled) setStats(cached);
+                if (!cancelled) {
+                    setStats(cached);
+                    setIsLoading(false);
+                }
                 return;
             }
 
-            if (cached) {
-                if (!cancelled) setStats(cached);
+            if (cached && !cancelled) {
+                setStats(cached);
             }
 
             try {
                 const summary = await fetchAppSummary(appId);
-                if (!summary || cancelled) return;
+                if (!summary || cancelled) {
+                    if (!cancelled) setIsLoading(false);
+                    return;
+                }
 
-                const steamPointsSum = await fetchSteamPointsSum(appId);
+                const steamPointsSum = summary.achievementCount
+                    ? await fetchSteamPointsSum(appId)
+                    : null;
                 if (cancelled) return;
 
                 const mapped = mapSummary(summary, steamPointsSum);
@@ -103,9 +119,13 @@ export default function useSteamHunter(appId: number) {
                 };
 
                 await updateCache(appId, merged);
-                if (!cancelled) setStats(merged);
+                if (!cancelled) {
+                    setStats(merged);
+                    setIsLoading(false);
+                }
             } catch (e) {
                 console.error('[decky-steamhunter] fetch failed', e);
+                if (!cancelled) setIsLoading(false);
             }
         })();
 
@@ -114,5 +134,5 @@ export default function useSteamHunter(appId: number) {
         };
     }, [appId]);
 
-    return stats;
+    return { ...stats, isLoading };
 }

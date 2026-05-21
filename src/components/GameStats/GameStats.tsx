@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ButtonItem } from '@decky/ui';
+import { Spinner } from '@decky/ui';
 import useSteamHunter from '../../hooks/useSteamHunter';
 import { SteamHunterStats } from '../../types/steamHunter';
 import { steamHunterAchievementsUrl } from '../../utils/format';
@@ -41,6 +41,8 @@ const GRID_LAYOUT: (StatCellConfig | null)[] = [
     { valueKey: 'playersAndOwners', icon: '👥', label: 'Players & Owners' },
 ];
 
+const PLAYERS_OWNERS_CELL = GRID_LAYOUT[8]!;
+
 function StatCell({
     value,
     icon,
@@ -53,10 +55,12 @@ function StatCell({
     return (
         <div className="sh-cell">
             <p className="sh-value">{value}</p>
-            <span className="sh-icon" aria-hidden="true">
-                {icon}
-            </span>
-            <p className="sh-label">{label}</p>
+            <div className="sh-meta">
+                <span className="sh-icon" aria-hidden="true">
+                    {icon}
+                </span>
+                <p className="sh-label">{label}</p>
+            </div>
         </div>
     );
 }
@@ -67,7 +71,7 @@ function EmptyStatCell() {
 
 export function GameStats({ appId, id }: GameStatsProps) {
     const [gameLaunching, setGameLaunching] = useState(false);
-    const stats = useSteamHunter(appId);
+    const { isLoading, ...stats } = useSteamHunter(appId);
 
     const handleGameActionStart = (
         _actionType: number,
@@ -98,38 +102,61 @@ export function GameStats({ appId, id }: GameStatsProps) {
         };
     }, [appId, gameLaunching]);
 
-    const hide = !stats.showStats || !stats.hasData || gameLaunching;
+    const hide =
+        !stats.showStats || (!stats.hasData && !isLoading) || gameLaunching;
 
     return (
         <div id={id} style={{ display: hide ? 'none' : 'block' }}>
             {style}
             <div className="sh-info">
-                <div className="sh-grid">
-                    {GRID_LAYOUT.map((cell, index) =>
-                        cell === null ? (
-                            <EmptyStatCell key={index} />
-                        ) : (
-                            <StatCell
-                                key={index}
-                                value={stats[cell.valueKey]}
-                                icon={cell.icon}
-                                label={cell.label}
-                            />
-                        )
-                    )}
-                </div>
-                <div className="sh-footer">
-                    <ButtonItem
-                        layout="below"
-                        onClick={() =>
-                            SteamClient.System.OpenInSystemBrowser(
-                                steamHunterAchievementsUrl(appId)
+                <div className="sh-body">
+                {isLoading ? (
+                    <div className="sh-loading">
+                        <Spinner
+                            className="sh-spinner"
+                            style={{ width: '28px', height: '28px' }}
+                        />
+                    </div>
+                ) : stats.hasAchievements ? (
+                    <div className="sh-grid">
+                        {GRID_LAYOUT.map((cell, index) =>
+                            cell === null ? (
+                                <EmptyStatCell key={index} />
+                            ) : (
+                                <StatCell
+                                    key={index}
+                                    value={stats[cell.valueKey]}
+                                    icon={cell.icon}
+                                    label={cell.label}
+                                />
                             )
-                        }
-                    >
-                        View on SteamHunter
-                    </ButtonItem>
+                        )}
+                    </div>
+                ) : (
+                    <div className="sh-single-stat">
+                        <StatCell
+                            value={stats.playersAndOwners}
+                            icon={PLAYERS_OWNERS_CELL.icon}
+                            label={PLAYERS_OWNERS_CELL.label}
+                        />
+                    </div>
+                )}
                 </div>
+                {!isLoading && (
+                    <div className="sh-footer">
+                        <button
+                            type="button"
+                            className="sh-link-btn"
+                            onClick={() =>
+                                SteamClient.System.OpenInSystemBrowser(
+                                    steamHunterAchievementsUrl(appId)
+                                )
+                            }
+                        >
+                            View on SteamHunter
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );
