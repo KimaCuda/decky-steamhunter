@@ -8,6 +8,7 @@ export interface SteamHunterAppSummary {
     playersPerfectedCount: number;
     playersQualifiedCount: number;
     userCount: number;
+    hasPaidDlc: boolean;
 }
 
 export interface SteamHunterAchievement {
@@ -23,6 +24,7 @@ export interface SteamHunterStats {
     playersPerfected: string;
     playersQualified: string;
     playersAndOwners: string;
+    hasPaidDlc: boolean;
     hasAchievements: boolean;
     lastUpdatedAt: Date;
     showStats: boolean;
@@ -38,7 +40,8 @@ export const EMPTY_STATS: SteamHunterStats = {
     playersPerfected: '--',
     playersQualified: '--',
     playersAndOwners: '--',
-    hasAchievements: true,
+    hasPaidDlc: false,
+    hasAchievements: false,
     lastUpdatedAt: new Date(0),
     showStats: true,
     hasData: false,

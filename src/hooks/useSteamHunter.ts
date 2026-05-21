@@ -10,6 +10,7 @@ import { formatMinutes, formatNumber } from '../utils/format';
 import { getCache, updateCache } from './cache';
 
 const CACHE_HOURS = 12;
+const statsMemoryCache = new Map<number, SteamHunterStats>();
 
 function needCacheUpdate(lastUpdatedAt: Date) {
     const hours =
@@ -33,6 +34,7 @@ function mapSummary(
         playersPerfected: formatNumber(summary.playersPerfectedCount),
         playersQualified: formatNumber(summary.playersQualifiedCount),
         playersAndOwners: formatNumber(summary.userCount),
+        hasPaidDlc: summary.hasPaidDlc,
         hasAchievements,
         lastUpdatedAt: new Date(),
         showStats: true,
@@ -78,26 +80,34 @@ async function fetchSteamPointsSum(appId: number): Promise<number | null> {
 export type UseSteamHunterResult = SteamHunterStats & { isLoading: boolean };
 
 export default function useSteamHunter(appId: number): UseSteamHunterResult {
-    const [stats, setStats] = useState<SteamHunterStats>(EMPTY_STATS);
-    const [isLoading, setIsLoading] = useState(true);
+    const [stats, setStats] = useState<SteamHunterStats>(() => {
+        return statsMemoryCache.get(appId) ?? EMPTY_STATS;
+    });
+    const [isLoading, setIsLoading] = useState(
+        () => !statsMemoryCache.get(appId)?.hasData
+    );
 
     useEffect(() => {
         let cancelled = false;
 
         (async () => {
-            setIsLoading(true);
-
             const cached = await getCache(appId);
             if (cached && !needCacheUpdate(cached.lastUpdatedAt)) {
                 if (!cancelled) {
+                    statsMemoryCache.set(appId, cached);
                     setStats(cached);
                     setIsLoading(false);
                 }
                 return;
             }
 
-            if (cached && !cancelled) {
+            if (cached?.hasData && !cancelled) {
+                statsMemoryCache.set(appId, cached);
                 setStats(cached);
+            }
+
+            if (!cached?.hasData && !cancelled) {
+                setIsLoading(true);
             }
 
             try {
@@ -120,6 +130,7 @@ export default function useSteamHunter(appId: number): UseSteamHunterResult {
 
                 await updateCache(appId, merged);
                 if (!cancelled) {
+                    statsMemoryCache.set(appId, merged);
                     setStats(merged);
                     setIsLoading(false);
                 }

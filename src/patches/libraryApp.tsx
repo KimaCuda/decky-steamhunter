@@ -48,7 +48,7 @@ export function patchLibraryApp() {
                                 }
                             );
 
-                            const component = (
+                            const gameStats = (
                                 <GameStats
                                     id="decky-steamhunter"
                                     appId={appId}
@@ -60,7 +60,7 @@ export function patchLibraryApp() {
                                     componentToSplice?.splice(
                                         spliceIndex,
                                         0,
-                                        component
+                                        gameStats
                                     );
                                 } else {
                                     console.error(
@@ -68,11 +68,17 @@ export function patchLibraryApp() {
                                     );
                                 }
                             } else {
-                                componentToSplice?.splice(
-                                    existingIndex,
-                                    1,
-                                    component
-                                );
+                                const existingAppId = (
+                                    componentToSplice?.[existingIndex]
+                                        ?.props as { appId?: number }
+                                )?.appId;
+                                if (existingAppId !== appId) {
+                                    componentToSplice?.splice(
+                                        existingIndex,
+                                        1,
+                                        gameStats
+                                    );
+                                }
                             }
                             return ret2;
                         }

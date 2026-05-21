@@ -15,9 +15,13 @@ export default (
 .sh-body {
     width: 100%;
     max-width: 540px;
-    min-height: 124px;
+    min-height: 160px;
     margin: 0 auto;
     box-sizing: border-box;
+}
+
+.sh-body-compact {
+    min-height: 124px;
 }
 
 .sh-grid {
@@ -43,8 +47,10 @@ export default (
     gap: 4px;
 }
 
-.sh-cell-empty {
+.sh-cell-empty,
+.sh-cell-pending {
     visibility: hidden;
+    min-height: 36px;
 }
 
 .sh-loading {
@@ -53,10 +59,15 @@ export default (
     align-items: center;
     width: 100%;
     height: 100%;
-    min-height: 124px;
-    max-height: 124px;
+    min-height: 160px;
+    max-height: 160px;
     overflow: hidden;
     box-sizing: border-box;
+}
+
+.sh-body-compact .sh-loading {
+    min-height: 124px;
+    max-height: 124px;
 }
 
 .sh-loading .sh-spinner,
@@ -81,6 +92,11 @@ export default (
     line-height: 1.2;
 }
 
+.sh-value-highlight {
+    color: #b366ff;
+    font-weight: bold;
+}
+
 .sh-label {
     font-size: 10px;
     text-transform: uppercase;
@@ -93,6 +109,16 @@ export default (
     font-size: 11px;
     opacity: 0.7;
     flex-shrink: 0;
+}
+
+.sh-cell-perfect .sh-value {
+    color: #e8c547;
+}
+
+.sh-icon-perfect {
+    opacity: 1;
+    color: #e8c547;
+    font-size: 13px;
 }
 
 .sh-footer {
